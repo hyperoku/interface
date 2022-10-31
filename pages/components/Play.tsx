@@ -1,15 +1,16 @@
-import { Box, Heading, HStack } from '@chakra-ui/react';
+import { Box, Heading, HStack, VStack } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
 import { useContractEvent, useContractRead } from 'wagmi'
 import roundsManagerABI from '../../contracts/roundsManager';
 import randomSudokuGeneratorABI from '../../contracts/randomSudokuGenerator';
 import colors from '../Colors';
-import { PlayButton } from './legos'
+import { PlayButton, RequestProgress } from './legos'
 import Sudoku from './Sudoku';
 
 const Play = (props: {difficulties: string[]}) => {
 
     const [anyClicked, setAnyClicked] = useState(false)
+    const [metamaskConfirmed, setMetamaskConfirmed] = useState(false)
     const [gameCreated, setGameCreated] = useState(-1)
     const [gameString, setGameString] = useState('')
     const [getGameEnabled, setGetGameEnabled] = useState(false)
@@ -17,7 +18,7 @@ const Play = (props: {difficulties: string[]}) => {
     const [requestId, setRequestId] = useState(-1)
 
     const { data: gameData, isError: isGameError, isLoading: isGameLoading } = useContractRead({
-        address: '0x73257E7Fd45f69c752bB3D28f1f6a134d22ad00c',
+        address: process.env.NEXT_PUBLIC_ADDRESS_ROUNDS_MANAGER,
         abi: roundsManagerABI,
         functionName: 'getGame',
         enabled: getGameEnabled,
@@ -25,7 +26,7 @@ const Play = (props: {difficulties: string[]}) => {
     })
 
     const { data: requestData, isError: isRequestError, isLoading: isRequestLoading } = useContractRead({
-        address: '0x7470778015Cc0D6ddc503d998B50AE9DD5c2650B',
+        address: process.env.NEXT_PUBLIC_ADDRESS_RANDOM_SUDOKU_GENERATOR,
         abi: randomSudokuGeneratorABI,
         functionName: 'getRequestStatus',
         enabled: getRequestEnabled,
@@ -33,7 +34,7 @@ const Play = (props: {difficulties: string[]}) => {
     })
 
     useContractEvent({
-        address: '0x7470778015Cc0D6ddc503d998B50AE9DD5c2650B',
+        address: process.env.NEXT_PUBLIC_ADDRESS_RANDOM_SUDOKU_GENERATOR,
         abi: randomSudokuGeneratorABI,
         eventName: 'RequestFulfilled',
         listener(...args) {
@@ -41,6 +42,7 @@ const Play = (props: {difficulties: string[]}) => {
                 setGetRequestEnabled(true);
             }
         },
+        once: getRequestEnabled
     })
 
     useEffect(() => {
@@ -65,43 +67,50 @@ const Play = (props: {difficulties: string[]}) => {
         }
     }, [requestData])
 
-    useEffect(() => {
-        if (gameString) {
-            console.log("FATTO:")
-            console.log(gameString);
-        }
-    }, [gameString])
-
     return (
         <Box 
             backgroundColor={colors.primary_light} 
-            borderRadius="1em" 
+            borderRadius="2em" 
             padding="4em" 
             mb="3em"
             shadow={"xl"}
         >
-            <Heading mb="1em">Chose a difficulty</Heading>
-            <HStack 
-                fontSize="1.5em"
-                justifyContent="space-between"
-            >
-                {
-                    gameCreated === -1 &&
-                    props.difficulties.map((difficulty) => (
+            <Box flexDir="column" display={!metamaskConfirmed ? "flex" : "none"}>
+                <Heading mb="1em" fontSize="2.5em">Chose a difficulty</Heading>
+                <HStack 
+                    justifyContent="space-between"
+                    display={!metamaskConfirmed ? "flex" : "none"}
+                >
+                    {props.difficulties.map((difficulty) => (
                         <PlayButton 
                             text={difficulty}
                             key={difficulty}
                             anyClicked={anyClicked}
                             setAnyClicked={setAnyClicked}
+                            setMetamaskConfirmed={setMetamaskConfirmed}
                             setGameCreated={setGameCreated}
                         />
-                    ))
-                }
-                {
-                    gameCreated !== -1 &&
-                    <Sudoku gameString={gameString} />
-                }
-            </HStack>
+                    ))}
+                </HStack>
+            </Box>
+            {
+                metamaskConfirmed && 
+                gameString==='' &&
+                <>
+                <Heading mb="1em" fontSize="2.5em">Generating your game</Heading>
+                <RequestProgress
+                    gameCreated={gameCreated}
+                    gameString={gameString}
+                />
+                </>
+            }
+            {
+                gameString!=='' &&
+                <>
+                <Heading mb="1em" fontSize="2.5em">Play</Heading>
+                <Sudoku gameString={gameString}/>
+                </>
+            }
         </Box>
     )
 }

@@ -8,11 +8,12 @@ const PlayButton = (props: {
     text: string,
     anyClicked: boolean,
     setAnyClicked: Dispatch<SetStateAction<boolean>>
+    setMetamaskConfirmed: Dispatch<SetStateAction<boolean>>
     setGameCreated: Dispatch<SetStateAction<number>>
 }) => {
 
     const { config, error: prepareError } = usePrepareContractWrite({
-        address: '0x73257E7Fd45f69c752bB3D28f1f6a134d22ad00c',
+        address: process.env.NEXT_PUBLIC_ADDRESS_ROUNDS_MANAGER,
         abi: roundsMangerABI,
         functionName: 'createGame',
         args: [
@@ -50,6 +51,12 @@ const PlayButton = (props: {
     }, [writeError])
 
     useEffect(() => {
+        if (isSuccessWrite) {
+            props.setMetamaskConfirmed(true);
+        }
+    }, [isSuccessWrite])
+
+    useEffect(() => {
         if (isSuccessTx) {
             setGame();
         }
@@ -61,12 +68,12 @@ const PlayButton = (props: {
                 onClick={() => clicked()}
                 disabled={!write || props.anyClicked}
                 isLoading={isLoadingWrite || isLoadingTx}
-                loadingText='Generating'
+                loadingText='Waiting'
                 padding="1.5em 1.2em"
-                fontSize="2em"
+                borderRadius="0.33em"
+                fontSize="3em"
                 color={colors.primary}
                 backgroundColor={colors.accent}
-                borderRadius="0.3em"
                 width="31%"
                 _hover={{
                     backgroundColor: colors.button_hover,

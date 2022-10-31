@@ -6,6 +6,9 @@ const colors = {
     dark_bg: '#101010',
     button_hover: "#600",
     button_hover_dark: "#b5b5b5",
+    success: "#baffc0",
+    error: "#ffbaba",
+    idle: "#f0f0f0",
 }
 
 export default colors;

@@ -31,7 +31,7 @@ const walletTheme = merge(darkTheme({
     accentColor: colors.primary,
     accentColorForeground: colors.dark_bg,
     connectButtonText: colors.dark_bg,
-    connectButtonBackground: colors.primary,
+    connectButtonBackground: colors.primary_light,
     connectButtonBackgroundError: colors.primary,
     connectButtonInnerBackground: colors.secondary,
   },

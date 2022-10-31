@@ -2,7 +2,9 @@
 
 const Sudoku = (props: {gameString: string}) => {
     return(
-        <></>
+        <>
+            {props.gameString}
+        </>
     )
 }
 

@@ -9,7 +9,6 @@ import {
     TableContainer,
     useColorModeValue,
 } from '@chakra-ui/react'
-import { BigNumber } from 'ethers';
 import colors from '../../Colors';
 
 const RoundTable = ( props: { difficulty: string, games: Game[] } ) => {
