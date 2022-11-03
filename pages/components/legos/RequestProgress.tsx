@@ -13,7 +13,7 @@ const RequestProgress = (props: { gameCreated: number, gameString: string }) => 
                 p="2em 0"
                 borderRadius="1em"
             >
-                <Text>Waiting for transaction execution</Text>
+                <Text>Executing your transaction . . .</Text>
                 {
                     props.gameCreated === -1 &&
                     <Spinner size="xl" thickness="8px" />
@@ -32,7 +32,7 @@ const RequestProgress = (props: { gameCreated: number, gameString: string }) => 
                 borderRadius="1em"
                 
             >
-                <Text>Waiting Sudoku Generation</Text>
+                <Text>Generating the Sudoku . . .</Text>
                 {
                     props.gameCreated === -1 &&
                     <NotAllowedIcon h="1.5em" w="1.5em" />

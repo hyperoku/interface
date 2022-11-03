@@ -12,7 +12,7 @@ const Play = (props: {difficulties: string[]}) => {
     const [anyClicked, setAnyClicked] = useState(false)
     const [metamaskConfirmed, setMetamaskConfirmed] = useState(false)
     const [gameCreated, setGameCreated] = useState(-1)
-    const [gameString, setGameString] = useState('')
+    const [gameString, setGameString] = useState("300020000690087001241050738100236975000008410903700862009005327000902050060470189")
     const [getGameEnabled, setGetGameEnabled] = useState(false)
     const [getRequestEnabled, setGetRequestEnabled] = useState(false)
     const [requestId, setRequestId] = useState(-1)
@@ -75,12 +75,9 @@ const Play = (props: {difficulties: string[]}) => {
             mb="3em"
             shadow={"xl"}
         >
-            <Box flexDir="column" display={!metamaskConfirmed ? "flex" : "none"}>
+            <Box flexDir="column" display={!metamaskConfirmed && !gameString ? "flex" : "none"}>
                 <Heading mb="1em" fontSize="2.5em">Chose a difficulty</Heading>
-                <HStack 
-                    justifyContent="space-between"
-                    display={!metamaskConfirmed ? "flex" : "none"}
-                >
+                <HStack justifyContent="space-between">
                     {props.difficulties.map((difficulty) => (
                         <PlayButton 
                             text={difficulty}
@@ -95,7 +92,7 @@ const Play = (props: {difficulties: string[]}) => {
             </Box>
             {
                 metamaskConfirmed && 
-                gameString==='' &&
+                !gameString &&
                 <>
                 <Heading mb="1em" fontSize="2.5em">Generating your game</Heading>
                 <RequestProgress
@@ -105,7 +102,7 @@ const Play = (props: {difficulties: string[]}) => {
                 </>
             }
             {
-                gameString!=='' &&
+                gameString &&
                 <>
                 <Heading mb="1em" fontSize="2.5em">Play</Heading>
                 <Sudoku gameString={gameString}/>

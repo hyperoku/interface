@@ -3,6 +3,16 @@
   src: url('../fonts/Gagkline/Gagkline.otf');
 }
 
+@font-face {
+  font-family: 'SpaceMonoR';
+  src: url('../fonts/SpaceMono/SpaceMono-Regular.ttf');
+}
+
+@font-face {
+  font-family: 'SpaceMonoB';
+  src: url('../fonts/SpaceMono/SpaceMono-Bold.ttf');
+}
+
 html,
 body {
   padding: 0;
@@ -26,4 +36,8 @@ main {
   font-size: 1.1em;
   color: #400;
   padding-top: 2em;
+}
+
+#__next > div > div > header > div > div > div > button {
+  padding: 0.3em;
 }

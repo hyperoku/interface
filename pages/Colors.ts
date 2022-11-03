@@ -9,6 +9,8 @@ const colors = {
     success: "#baffc0",
     error: "#ffbaba",
     idle: "#f0f0f0",
+    cellFilled: "#ffd06f",
+    cellHover: "#ffe2a7",
 }
 
 export default colors;
