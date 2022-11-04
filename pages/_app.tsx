@@ -32,7 +32,7 @@ const walletTheme = merge(darkTheme({
     accentColorForeground: colors.dark_bg,
     connectButtonText: colors.dark_bg,
     connectButtonBackground: colors.primary_light,
-    connectButtonBackgroundError: colors.primary,
+    connectButtonBackgroundError: colors.accent,
     connectButtonInnerBackground: colors.secondary,
   },
   fonts: {
@@ -48,7 +48,7 @@ const chakraTheme = extendTheme({
   styles: {
     global: (props: any) => ({
       body: {
-        bg: mode(colors.primary, colors.dark_bg)(props),
+        bg: mode(colors.secondary, colors.dark_bg)(props),
         color: mode(colors.accent, colors.primary)(props),
       }
     })

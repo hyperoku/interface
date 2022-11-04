@@ -1,5 +1,6 @@
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { Box, Flex, Heading } from '@chakra-ui/react'
+import colors from '../Colors';
 
 const Header = () => {
     return (

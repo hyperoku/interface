@@ -94,19 +94,16 @@ const Play = (props: {difficulties: string[]}) => {
                 metamaskConfirmed && 
                 !gameString &&
                 <>
-                <Heading mb="1em" fontSize="2.5em">Generating your game</Heading>
-                <RequestProgress
-                    gameCreated={gameCreated}
-                    gameString={gameString}
-                />
+                    <Heading mb="1em" fontSize="2.5em">Generating your game</Heading>
+                    <RequestProgress
+                        gameCreated={gameCreated}
+                        gameString={gameString}
+                    />
                 </>
             }
             {
                 gameString &&
-                <>
-                <Heading mb="1em" fontSize="2.5em">Play</Heading>
                 <Sudoku gameString={gameString}/>
-                </>
             }
         </Box>
     )
