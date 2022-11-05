@@ -41,3 +41,32 @@ main {
 #__next > div > div > header > div > div > div > button {
   padding: 0.3em;
 }
+
+div > div > div.cell {
+  width: 2em;
+  height: 2em;
+  justify-content: center;
+  align-items: center;
+  transition: background-color 0.1s ease-in-out;
+  border-radius: 0.25em;
+  margin: 0.1em;
+}
+
+div > div > div.notedCell {
+  font-size: 0.5em;
+  width: 4em !important;
+  height: 4em !important;
+  border-radius: 0.5em;
+  margin: 0.2em;
+  margin-bottom: 0.2em;
+  margin-top: 0.2em;
+  overflow-wrap: anywhere;
+  padding: 1em;
+  line-height: 1em;
+  background-color: #dbccad;
+}
+
+div > div > div.selectedCell {
+  color: #eee4d0;
+  background-color: #400;
+}

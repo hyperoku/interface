@@ -3,7 +3,8 @@ import colors from "../../Colors";
 
 const MenuButton = (props: {val: number | JSX.Element, active: boolean, holdable: boolean, onClick: () => void}) => {
     return (
-        <Flex w="4.5em" h="2.25em" 
+        <Flex
+            w="4.5em" h="2.25em" 
             flex="44%" 
             justifyContent="center"
             alignItems="center"

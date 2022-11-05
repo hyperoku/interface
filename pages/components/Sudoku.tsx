@@ -1,5 +1,9 @@
-import { AlertDialog, AlertDialogBody, AlertDialogCloseButton, AlertDialogContent, AlertDialogFooter, AlertDialogHeader, AlertDialogOverlay, background, Box, Button, Flex, Heading, HStack, useDisclosure, VStack } from "@chakra-ui/react";
-import { useRef, useState } from "react";
+import { 
+    AlertDialog, AlertDialogBody, AlertDialogCloseButton, AlertDialogContent, 
+    AlertDialogFooter, AlertDialogHeader, AlertDialogOverlay, Box, Button, Flex, 
+    Heading, HStack, useDisclosure, VStack 
+} from "@chakra-ui/react";
+import { useEffect, useRef, useState } from "react";
 import colors from "../Colors";
 import { Cell, MenuButton } from "./legos";
 import { FaRedo, FaPen, FaStepBackward, FaFlagCheckered } from "react-icons/fa";
@@ -24,7 +28,8 @@ const Sudoku = (props: { gameString: string }) => {
     const [selectedNumber, setSelectedNumber] = useState(-1);
     const [grid, setGrid] = useState(initialGrid);
     const [noteMode, setNoteMode] = useState(false);
-    const [history, setHistory] = useState([initialGrid]);
+    const [movesHistory, setMovesHistory] = useState<Move[]>([]);
+    const [notedCells, setNotedCells] = useState(0);
     const { isOpen, onOpen, onClose } = useDisclosure()
     const cancelRef = useRef<HTMLButtonElement>(null);
 
@@ -34,20 +39,12 @@ const Sudoku = (props: { gameString: string }) => {
     const undoIcon = <FaStepBackward style={iconStyle} />;
     const finishIcon = <FaFlagCheckered style={iconStyle} />;
 
-    interface Action {
-        icon: JSX.Element,
-        active: boolean,
-        holdable: boolean,
-        onClick: () => void,
-    }
-
     const clear: Action = {
         icon: clearIcon,
         active: false,
         holdable: false,
         onClick: () => {
             onOpen();
-
         }
     }
 
@@ -65,9 +62,18 @@ const Sudoku = (props: { gameString: string }) => {
         active: false,
         holdable: false,
         onClick: () => {
-            if (history.length > 1) {
-                setHistory(history.slice(0, history.length - 1));
-                setGrid(history[history.length - 2]);
+            if (movesHistory.length > 0) {
+                let lastMove = movesHistory[movesHistory.length - 1];
+                let newGrid = grid.map((row) => row.slice());
+                newGrid[lastMove.row][lastMove.col] = lastMove.prevValue;
+                setNotedCells(notedCells - lastMove.addedNoted);
+                if (lastMove.prevNoted) {
+                    setNotedStyle(lastMove.row, lastMove.col);
+                } else {
+                    removeNotedStyle(lastMove.row, lastMove.col);
+                }
+                setGrid(newGrid);
+                setMovesHistory(movesHistory.slice(0, movesHistory.length - 1));
             }
         }
     }
@@ -78,34 +84,145 @@ const Sudoku = (props: { gameString: string }) => {
         holdable: false,
         onClick: () => {
             console.log(grid)
+            console.log(notedCells)
         }
     }
 
     const actions: Action[] = [clear, note, undo, finish];
 
+    const getCell = (i: number, j: number) => {
+        return document.getElementById("cell_" + `${i * 9 + j}`)
+    }
+
+    const setNotedStyle = (i: number, j: number) => {
+        getCell(i,j)?.classList.add("notedCell");
+    }
+
+    const removeNotedStyle = (i: number, j: number) => {
+        getCell(i,j)?.classList.remove("notedCell");
+    }
+
+    const editCell = (i: number, j: number) => {
+        if (initialGrid[i][j] == 0 && selectedNumber != -1) {
+            let isNoted = getCell(i,j)?.classList.contains("notedCell");
+            let newGrid = grid.map((row) => row.slice());
+            let newValue = 0;
+            let prevValue = newGrid[i][j];
+            let addedNoted = 0;
+            if (!selectedNumber) {
+                if (isNoted) {
+                    removeNotedStyle(i,j);
+                    setNotedCells(notedCells - 1);
+                    addedNoted = -1;
+                }
+            } else {
+                if (!noteMode) {
+                    if (newGrid[i][j] != selectedNumber || isNoted) {
+                        newValue = selectedNumber;
+                    }
+                    if (isNoted) {
+                        removeNotedStyle(i,j);
+                        setNotedCells(notedCells - 1);
+                        addedNoted = -1;
+                    }
+                } else {
+                    if (!isNoted) {
+                        setNotedStyle(i,j);
+                        setNotedCells(notedCells + 1);
+                        addedNoted = 1;
+                        newValue = selectedNumber;
+                    } else {
+                        let notedNumbers = prevValue.toString();
+                        if (notedNumbers.includes(selectedNumber.toString())) {
+                            notedNumbers = notedNumbers.replace(selectedNumber.toString(), "");
+                        } else {
+                            notedNumbers += selectedNumber.toString();
+                        }
+                        if (notedNumbers.length == 0) {
+                            removeNotedStyle(i,j);
+                            setNotedCells(notedCells - 1);
+                            addedNoted = -1;
+                        } else {
+                            let sortedNumbers = notedNumbers.split("").sort().join("");
+                            newValue = Number(sortedNumbers);
+                        }
+                    }
+                }
+            }
+            newGrid[i][j] = newValue;
+            setMovesHistory([...movesHistory, { 
+                row: i, 
+                col: j, 
+                prevValue: prevValue,
+                addedNoted,
+                prevNoted: isNoted
+            }]);
+            setGrid(newGrid);
+        }
+    }
+
+    const selectMenuNumber = (num: number) => {
+        resetSelectedCells();
+        if (num != selectedNumber) {
+            setSelectedNumber(num);
+            setSelectedCells(num);
+        } else {
+            setSelectedNumber(-1)
+        }
+    }
+
+    const resetSelectedCells = () => {
+        let selectedCells = document.getElementsByClassName("selectedCell");
+        while (selectedCells.length > 0) {
+            selectedCells[0].classList.remove("selectedCell");
+        }
+    }
+
+    const setSelectedCells = (selectedNumber: number)  => {
+        let cells = document.getElementsByClassName("cell");
+        for (let i = 0; i < cells.length; i++) {
+            if (cells[i].innerHTML == selectedNumber.toString() && !cells[i].classList.contains("notedCell")) {
+                cells[i].classList.add("selectedCell");
+            }
+        }
+    }
+
+    const resetGame = () => {
+        let notedCells = document.getElementsByClassName("notedCell");
+        while (notedCells.length > 0) {
+            notedCells[0].classList.remove("notedCell");
+        }
+        setMovesHistory([]);
+        setGrid(initialGrid);
+        setSelectedNumber(-1);
+        setNoteMode(false);
+        setNotedCells(0);
+        onClose();
+    }
+
+    useEffect(() => {
+        resetSelectedCells();
+        setSelectedCells(selectedNumber);
+    }, [grid]);
+
     return (
-        <HStack justifyContent="space-evenly" fontFamily="SpaceMonoR" padding="0 8em">
+        <HStack justifyContent="space-evenly" fontFamily="SpaceMonoR" padding="0 8em" userSelect="none">
             <Box width="min-content">
                 <Heading fontSize="2em" textAlign="center">Menu</Heading>
                 <Flex flexWrap="wrap" marginTop="1em" backgroundColor={colors.secondary} padding="1em" borderRadius="1em">
                     {
                         numbers.map((num) => {
                             return (
-                                <MenuButton val={num} active={num == selectedNumber} holdable={true} onClick={
-                                    () => {
-                                        if (num != selectedNumber) setSelectedNumber(num)
-                                        else setSelectedNumber(-1)
-                                    }
-                                } />
+                                <MenuButton key={num} val={num} active={num == selectedNumber} holdable={true} onClick={() => selectMenuNumber(num)} />
                             )
                         })
                     }
                 </Flex>
                 <Flex flexWrap="wrap" marginTop="1em" backgroundColor={colors.secondary} padding="1em" borderRadius="1em">
                     {
-                        actions.map((action) => {
+                        actions.map((action, i) => {
                             return (
-                                <MenuButton val={action.icon} active={action.active} holdable={action.holdable} onClick={action.onClick} />
+                                <MenuButton key={i} val={action.icon} active={action.active} holdable={action.holdable} onClick={action.onClick} />
                             )
                         })
                     }
@@ -127,14 +244,7 @@ const Sudoku = (props: { gameString: string }) => {
                                 {
                                     row.map((cell, j) => (
                                         <>
-                                            <Cell row={i} col={j} num={cell} editable={initialGrid[i][j] == 0} onClick={() => {
-                                                if (initialGrid[i][j] == 0 && selectedNumber != -1) {
-                                                    let newGrid = grid.map((row) => row.slice());
-                                                    newGrid[i][j] = selectedNumber;
-                                                    setGrid(newGrid);
-                                                    setHistory([...history, newGrid]);
-                                                }
-                                            }} />
+                                            <Cell key={i*9+j} row={i} col={j} num={cell} editable={initialGrid[i][j] == 0} onClick={editCell} />
                                             {
                                                 (j == 2 || j == 5) &&
                                                 <Flex w="0.1em" margin="0 0.1em"
@@ -172,13 +282,7 @@ const Sudoku = (props: { gameString: string }) => {
                         >
                             No
                         </Button>
-                        <Button colorScheme='red' ml={3} fontSize="1.5em" onClick={
-                            () => {
-                                setHistory([initialGrid]);
-                                setGrid(initialGrid);
-                                onClose();
-                            }
-                        }>
+                        <Button colorScheme='red' ml={3} fontSize="1.5em" onClick={resetGame}>
                             Yes
                         </Button>
                     </AlertDialogFooter>

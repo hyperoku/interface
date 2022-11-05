@@ -14,3 +14,18 @@ interface RequestStatus {
     sudoku: string,
     solution: string,
 }
+
+interface Action {
+    icon: JSX.Element,
+    active: boolean,
+    holdable: boolean,
+    onClick: () => void,
+}
+
+interface Move {
+    row: number,
+    col: number,
+    prevValue: number,
+    addedNoted: number,
+    prevNoted?: boolean,
+}
