@@ -6,23 +6,27 @@ import randomSudokuGeneratorABI from '../../contracts/randomSudokuGenerator';
 import colors from '../Colors';
 import { PlayButton, RequestProgress } from './legos'
 import Sudoku from './Sudoku';
+import { ethers } from 'ethers';
 
 const Play = (props: {difficulties: string[]}) => {
 
     const [anyClicked, setAnyClicked] = useState(false)
     const [metamaskConfirmed, setMetamaskConfirmed] = useState(false)
-    const [gameCreated, setGameCreated] = useState(-1)
-    const [gameString, setGameString] = useState("300020000690087001241050738100236975000008410903700862009005327000902050060470189")
+    const [gameId, setGameId] = useState(-1)
+    // const [gameString, setGameString] = useState("300020000690087001241050738100236975000008410903700862009005327000902050060470189")
+    // const [gameString, setGameString] = useState("378124596695387241241659738184236975726598413953741862419865327837912654562473189")
+    const [gameString, setGameString] = useState("")
     const [getGameEnabled, setGetGameEnabled] = useState(false)
     const [getRequestEnabled, setGetRequestEnabled] = useState(false)
     const [requestId, setRequestId] = useState(-1)
+    const [gameStart, setGameStart] = useState(0)
 
     const { data: gameData, isError: isGameError, isLoading: isGameLoading } = useContractRead({
         address: process.env.NEXT_PUBLIC_ADDRESS_ROUNDS_MANAGER,
         abi: roundsManagerABI,
         functionName: 'getGame',
         enabled: getGameEnabled,
-        args: [gameCreated]
+        args: [gameId]
     })
 
     const { data: requestData, isError: isRequestError, isLoading: isRequestLoading } = useContractRead({
@@ -46,15 +50,16 @@ const Play = (props: {difficulties: string[]}) => {
     })
 
     useEffect(() => {
-        if (gameCreated !== -1) {
+        if (gameId !== -1) {
             setGetGameEnabled(true);
         }
-    }, [gameCreated])
+    }, [gameId])
 
     useEffect(() => {
         if (gameData) {
             let game: Game = gameData as Game;
             setRequestId(game.request_id);
+            setGameStart(Number(game.start_blockTimestamp));
         }
     }, [gameData])
 
@@ -85,7 +90,7 @@ const Play = (props: {difficulties: string[]}) => {
                             anyClicked={anyClicked}
                             setAnyClicked={setAnyClicked}
                             setMetamaskConfirmed={setMetamaskConfirmed}
-                            setGameCreated={setGameCreated}
+                            setGameId={setGameId}
                         />
                     ))}
                 </HStack>
@@ -96,14 +101,14 @@ const Play = (props: {difficulties: string[]}) => {
                 <>
                     <Heading mb="1em" fontSize="2.5em">Generating your game</Heading>
                     <RequestProgress
-                        gameCreated={gameCreated}
+                        gameId={gameId}
                         gameString={gameString}
                     />
                 </>
             }
             {
                 gameString &&
-                <Sudoku gameString={gameString}/>
+                <Sudoku gameId={gameId} gameStart={gameStart} gameString={gameString}/>
             }
         </Box>
     )

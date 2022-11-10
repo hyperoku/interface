@@ -9,7 +9,7 @@ const PlayButton = (props: {
     anyClicked: boolean,
     setAnyClicked: Dispatch<SetStateAction<boolean>>
     setMetamaskConfirmed: Dispatch<SetStateAction<boolean>>
-    setGameCreated: Dispatch<SetStateAction<number>>
+    setGameId: Dispatch<SetStateAction<number>>
 }) => {
 
     const { config, error: prepareError } = usePrepareContractWrite({
@@ -41,7 +41,7 @@ const PlayButton = (props: {
 
     const setGame = async () => {
         let receipt = await data?.wait?.();
-        props.setGameCreated(Number(receipt?.logs[4].topics[1]))
+        props.setGameId(Number(receipt?.logs[4].topics[1]))
     }
 
     useEffect(() => {

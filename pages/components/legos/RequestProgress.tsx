@@ -2,7 +2,7 @@ import { CheckIcon, NotAllowedIcon } from "@chakra-ui/icons";
 import { Box, HStack, Spinner, Text, VStack } from "@chakra-ui/react";
 import colors from "../../Colors";
 
-const RequestProgress = (props: { gameCreated: number, gameString: string }) => {
+const RequestProgress = (props: { gameId: number, gameString: string }) => {
     return (
         <HStack width="100%" justifyContent="space-between" fontWeight={600} fontSize="2em">
             <HStack 
@@ -15,11 +15,11 @@ const RequestProgress = (props: { gameCreated: number, gameString: string }) => 
             >
                 <Text>Executing your transaction . . .</Text>
                 {
-                    props.gameCreated === -1 &&
+                    props.gameId === -1 &&
                     <Spinner size="xl" thickness="8px" />
                 }
                 {
-                    props.gameCreated !== -1 &&
+                    props.gameId !== -1 &&
                     <CheckIcon h="1.5em" w="1.5em" />
                 }
             </HStack>
@@ -34,11 +34,11 @@ const RequestProgress = (props: { gameCreated: number, gameString: string }) => 
             >
                 <Text>Generating the Sudoku . . .</Text>
                 {
-                    props.gameCreated === -1 &&
+                    props.gameId === -1 &&
                     <NotAllowedIcon h="1.5em" w="1.5em" />
                 }
                 {
-                    props.gameCreated !== -1 &&
+                    props.gameId !== -1 &&
                     <Spinner size="xl" thickness="8px" />
                 }
                 {

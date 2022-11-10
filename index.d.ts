@@ -3,8 +3,8 @@ interface Game {
     round_id: number,
     request_id: BigNumber,
     player: string,
-    start_blocknumber: number,
-    end_blocknumber: number,
+    start_blockTimestamp: number,
+    end_blockTimestamp: number,
 }
 
 interface RequestStatus {
