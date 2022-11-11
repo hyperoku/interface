@@ -116,19 +116,11 @@ const Sudoku = (props: { gameId: number, gameStart: number, gameString: string }
                     duration: 5000,
                     isClosable: true,
                 })
-                setEnabledFinish(false);
             } else {
-                setEnabledFinish(true);
+                write?.();
             }
         }
     }
-
-    useEffect(() => {
-        if (enabledFinish) {
-            console.log("HAHA")
-            write?.();
-        }
-    }, [enabledFinish])
 
     const actions: Action[] = [clear, note, undo, finish];
 
@@ -353,11 +345,28 @@ const Sudoku = (props: { gameId: number, gameStart: number, gameString: string }
     useEffect(() => {
         resetSelectedCells();
         setSelectedCells(selectedNumber);
+        if (sudokuIsValid()) {
+            setEnabledFinish(true);
+        }
     }, [grid]);
 
     useEffect(() => {
         setTimeout(() => setTime(time + 1), 1000);
     }, [time]);
+
+    useEffect(() => {
+        if (isSuccess) {
+            setEnabledFinish(false);
+        } else {
+            setEnabledFinish(true);
+        }
+    }, [isSuccess]);
+
+    useEffect(() => {
+        if (data) {
+            setEnabledFinish(false)
+        }
+    }, [data])
 
     return (
         <HStack justifyContent="space-evenly" fontFamily="SpaceMonoR" padding="0 8em" userSelect="none">

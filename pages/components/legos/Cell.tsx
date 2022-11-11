@@ -3,7 +3,7 @@ import colors from "../../Colors";
 
 const Cell = (props: { row: number, col: number, num: number, editable: boolean, onClick: (i: number, j: number) => void}) => {
     return (
-        <Flex key={props.col} className="cell"
+        <Flex key={props.col} className={`cell ${props.editable ? 'editableCell' : ''}`}
             backgroundColor={!props.editable ? colors.cellFilled : colors.primary_light}
             _hover={{
                 backgroundColor: props.editable ? colors.cellHover : "none",

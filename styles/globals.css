@@ -70,3 +70,12 @@ div > div > div.selectedCell {
   color: #eee4d0;
   background-color: #400;
 }
+
+div > div > div.selectedCell.editableCell:hover {
+  color: #eee4d0;
+  background-color: rgba(68, 0, 0, 0.579);
+}
+
+.chakra-alert {
+  font-size: 1.3em;
+}
